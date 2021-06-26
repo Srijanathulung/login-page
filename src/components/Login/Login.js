@@ -3,17 +3,20 @@ import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
 import Card from '../UI/Card/Card';
 
-const Login = () => {
+const Login = (props) => {
     const [enteredEmail, setEnteredEmail] = useState('');
     const [emailIsValid, setEmailIsValid] = useState();
 
     const [enteredPassword, setEnteredPassword] = useState('');
     const [passwordIsValid, setPasswordIsValid] = useState();
 
+    const [formIsValid, setFormIsValid] = useState(false);
+
 
     const validateEmailHandler = () => {
         setEmailIsValid(enteredEmail.includes('@'));
         // console.log('email must include @')
+        
     }
 
     const validatePasswordHandler = () => {
@@ -24,20 +27,33 @@ const Login = () => {
 
     const emailChangeHandler = (event) => {
         setEnteredEmail(event.target.value)
+
+        setFormIsValid(
+            event.target.value.includes('@') && enteredPassword.trim().length>6
+        )
     }
 
     const passwordChangeHandler = (event) => {
         setEnteredPassword(event.target.value)
+
+        setFormIsValid(
+            event.target.value.trim().length > 6 && enteredEmail.includes('@')
+          );
     }
 
     const submitHandler = (event) => {
         event.preventDefault();
+        props.onLogin(enteredEmail, enteredPassword);
+        console.log('is logged in');
+        console.log(enteredEmail, enteredPassword);
     }
 
     return (
         <Card>
         <form onSubmit={(event)=>submitHandler(event)}>
-            <div className={classes.control}>
+            <div className={`${classes.control} ${
+            emailIsValid === false ? classes.invalid : ''
+          }`}>
             <label htmlFor='email'>Email</label>
             <input
                         type='email'
@@ -48,7 +64,9 @@ const Login = () => {
                     />
             </div>
 
-            <div className={classes.control}>
+            <div className={`${classes.control} ${
+            passwordIsValid === false ? classes.invalid : ''
+          }`}>
                 <label htmlFor='password'>Password</label>
                     <input
                         type='password'
@@ -63,7 +81,13 @@ const Login = () => {
             </div>
 
             <div className={classes.actions}>
-            <Button type='submit' className={classes.btn}>login</Button>
+                    <Button
+                        type='submit'
+                        className={classes.btn}
+                        disabled={!formIsValid}
+                    >
+                        login
+                    </Button>
             </div>
 
         </form>
