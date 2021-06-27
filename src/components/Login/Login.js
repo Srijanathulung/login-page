@@ -49,11 +49,12 @@ const Login = (props) => {
     }
 
     return (
-        <Card>
+        <Card className={classes.login}>
         <form onSubmit={(event)=>submitHandler(event)}>
             <div className={`${classes.control} ${
             emailIsValid === false ? classes.invalid : ''
           }`}>
+              
             <label htmlFor='email'>Email</label>
             <input
                         type='email'
