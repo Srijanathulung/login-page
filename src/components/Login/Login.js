@@ -13,12 +13,20 @@ const Login = (props) => {
     const [formIsValid, setFormIsValid] = useState(false);
 
     useEffect(() => {
-        setFormIsValid(
-            enteredEmail.includes('@') && enteredPassword.trim().length>6
-        )
+        setTimeout(() => {
+            console.log('checking validity');
+            setFormIsValid(
+                enteredEmail.includes('@') && enteredPassword.trim().length > 6
+            )
+        }, 500);
+
+        //this cleanup function doesnot run before the very first sideeffect execution.
+        return () => {
+            console.log('Clean up function is called');
+        }
     },
-        [setFormIsValid, enteredEmail, enteredPassword] )
-        // [ enteredEmail, enteredPassword] )
+        // [setFormIsValid, enteredEmail, enteredPassword] )
+        [ enteredEmail, enteredPassword] )
         // [] )
         // [setFormIsValid] )
 
