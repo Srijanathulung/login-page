@@ -1,7 +1,9 @@
-import React, {useState, useEffect, useReducer} from 'react';
+import React, {useState, useEffect, useReducer, useContext, useRef} from 'react';
 import classes from './Login.module.css';
 import Button from '../UI/Button/Button';
 import Card from '../UI/Card/Card';
+import AuthContext from '../../store/auth-context';
+import Input from '../UI/Input/Input';
 
 //It is the reducer fn and it returns currentState which will be initialState for emailState in useReducer Hook
 const emailReducer = (prevState, action) => {
@@ -34,6 +36,11 @@ const Login = (props) => {
     // const [passwordIsValid, setPasswordIsValid] = useState();
 
     const [formIsValid, setFormIsValid] = useState(false);
+
+    const authCtx = useContext(AuthContext);
+    const emailInputRef = useRef();
+    const passwordInputRef = useRef();
+
 
     const [emailState, dispatchEmail] = useReducer(emailReducer, {
         value: '',
@@ -120,8 +127,14 @@ const Login = (props) => {
 
     const submitHandler = (event) => {
         event.preventDefault();
+        if (formIsValid) {
+            authCtx.onLogin(emailState.value, passwordState.value);  
+        } else if (!emailIsValid) {
+            emailInputRef.current.focus();
+        } else {
+            passwordInputRef.current.focus();
+        }
         // props.onLogin(enteredEmail, enteredPassword);
-        props.onLogin(emailState.value, passwordState.value);
         console.log('is logged in');
         // console.log(enteredEmail, enteredPassword);
     }
@@ -129,43 +142,37 @@ const Login = (props) => {
     return (
         <Card className={classes.login}>
         <form onSubmit={(event)=>submitHandler(event)}>
-            <div className={`${classes.control} ${
-            // emailIsValid === false ? classes.invalid : ''
-            emailState.isValid === false ? classes.invalid : ''
-          }`}>
-              
-            <label htmlFor='email'>Email</label>
-            <input
-                        type='email'
-                        id='email'
-                        value={emailState.value}
-                        // value={enteredEmail}
-                        onChange={(event) => emailChangeHandler(event)}
-                        onBlur={()=>validateEmailHandler()}
-                    />
-            </div>
+            
+                <Input
+                     ref={emailInputRef}
+                    label='Email'
+                     type='email'
+                    id='email'
+                    isValid={emailIsValid}
+                     value={emailState.value}
+                     // value={enteredEmail}
+                     onChange={emailChangeHandler}
+                     onBlur={()=>validateEmailHandler()}
+                />
 
-            <div className={`${classes.control} ${
-            passwordState.isValid === false ? classes.invalid : ''
-          }`}>
-                <label htmlFor='password'>Password</label>
-                    <input
-                        type='password'
-                        id='password'
-                        value={passwordState.value}
-                        onChange={(event) => passwordChangeHandler(event)}
-                        onBlur={()=>validatePasswordHandler()}
+                <Input
+                    ref={passwordInputRef}
+                    label='Password'
+                     type='password'
+                    id='password'
+                    isValid={passwordIsValid}
+                     value={passwordState.value}
+                     // value={enteredEmail}
+                     onChange={passwordChangeHandler}
+                     onBlur={()=>validatePasswordHandler()}
+                />
 
-
-                    />
-
-            </div>
 
             <div className={classes.actions}>
                     <Button
                         type='submit'
                         className={classes.btn}
-                        disabled={!formIsValid}
+                        // disabled={!formIsValid}
                     >
                         login
                     </Button>
